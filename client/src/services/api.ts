@@ -298,3 +298,21 @@ export async function reportSecurityAudit(payload: SecurityAuditPayload): Promis
     // Non-blocking
   }
 }
+
+export async function fetchSecurityAuditLogs(): Promise<Array<{
+  id: number;
+  event_type: string;
+  invoice_id?: string;
+  payment_hash_prefix?: string;
+  reason: string;
+  created_at: string;
+}>> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/security/audit`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.logs || [];
+  } catch {
+    return [];
+  }
+}

@@ -20,6 +20,7 @@ import {
   createPosInvoice,
   getInvoices,
   reportSecurityAudit,
+  fetchSecurityAuditLogs,
 } from './services/api';
 import { soundboxAudioEngine } from './services/soundboxAudioEngine';
 import { usePaymentPoller } from './hooks/usePaymentPoller';
@@ -203,6 +204,21 @@ export const App: React.FC = () => {
     });
 
     refreshTransactions();
+
+    fetchSecurityAuditLogs().then((backendLogs) => {
+      if (backendLogs && backendLogs.length > 0) {
+        setSecurityLogs(
+          backendLogs.map((l) => ({
+            id: `sec_db_${l.id}`,
+            timestamp: new Date(l.created_at).getTime(),
+            type: (l.event_type as SecurityEventLog['type']) || 'SPOOF_REJECTED',
+            severity: l.event_type.includes('REJECTED') || l.event_type.includes('PERMISSIONS') ? 'danger' : 'warning',
+            title: `[${l.event_type}] Security Event`,
+            detail: l.reason,
+          }))
+        );
+      }
+    });
   }, [refreshTransactions]);
 
   // 6. Gated Audio Confirmation strictly for Real Paid Payments
@@ -399,15 +415,14 @@ export const App: React.FC = () => {
 
   // 10. Red-Team Adversarial Test Handlers
   const handleSimulateFakeScreenshot = () => {
+    // SPEAKER STAYS 100% SILENT: Zero audio chime or speech
     setSecurityAlert('SPOOF_REJECTED');
-    soundboxAudioEngine.unlockAudio();
-    soundboxAudioEngine.playRejectionAlertTone();
 
     reportSecurityAudit({
       eventType: 'SPOOF_REJECTED',
       invoiceId: activeInvoice?.id,
       paymentHashPrefix: activeInvoice?.paymentHash.slice(0, 16),
-      reason: 'Red-Team Attack 1: Fake screenshot presented without NIP-47 settlement proof.',
+      reason: 'Red-Team Attack 1: Fake screenshot presented without NIP-47 settlement proof. Speaker kept 100% silent.',
     });
 
     setSecurityLogs((prev) => [
@@ -417,16 +432,15 @@ export const App: React.FC = () => {
         type: 'SPOOF_REJECTED',
         severity: 'danger',
         title: t('redteam_attack1_title'),
-        detail: t('redteam_attack1_desc'),
+        detail: 'Fake payment screenshot presented. Zero NIP-47 settlement proof found on node. Speaker stays 100% silent.',
       },
       ...prev,
     ]);
   };
 
   const handleSimulateHoldInvoice = () => {
+    // SPEAKER STAYS 100% SILENT: Zero audio chime or speech
     setSecurityAlert('UNSETTLED_HOLD');
-    soundboxAudioEngine.unlockAudio();
-    soundboxAudioEngine.playRejectionAlertTone();
 
     if (activeInvoice) {
       setActiveInvoice({ ...activeInvoice, status: 'PENDING' });
@@ -436,7 +450,7 @@ export const App: React.FC = () => {
       eventType: 'UNSETTLED_HOLD',
       invoiceId: activeInvoice?.id,
       paymentHashPrefix: activeInvoice?.paymentHash.slice(0, 16),
-      reason: 'Red-Team Attack 2: Unsettled Hold Invoice detected in channel. Audio alert kept silent.',
+      reason: 'Red-Team Attack 2: Unsettled Hold Invoice detected in channel. Audio alert kept 100% silent.',
     });
 
     setSecurityLogs((prev) => [
@@ -446,22 +460,21 @@ export const App: React.FC = () => {
         type: 'UNSETTLED_HOLD',
         severity: 'warning',
         title: t('redteam_attack2_title'),
-        detail: t('redteam_attack2_desc'),
+        detail: 'Unsettled HTLC in channel. Without cryptographic SHA-256 preimage verification, the soundbox refuses to chime.',
       },
       ...prev,
     ]);
   };
 
   const handleSimulateDuplicateReplay = () => {
+    // SPEAKER STAYS 100% SILENT: Zero audio chime or speech
     setSecurityAlert('DUPLICATE_REPLAY');
-    soundboxAudioEngine.unlockAudio();
-    soundboxAudioEngine.playRejectionAlertTone();
 
     reportSecurityAudit({
       eventType: 'DUPLICATE_REPLAY',
       invoiceId: activeInvoice?.id,
       paymentHashPrefix: activeInvoice?.paymentHash.slice(0, 16),
-      reason: 'Red-Team Attack 3: Duplicate relay event replayed. Blocked by idempotency guard.',
+      reason: 'Red-Team Attack 3: Duplicate relay event replayed. Blocked by idempotency guard. Speaker kept 100% silent.',
     });
 
     setSecurityLogs((prev) => [
@@ -478,9 +491,8 @@ export const App: React.FC = () => {
   };
 
   const handleSimulatePayBlock = () => {
+    // SPEAKER STAYS 100% SILENT: Zero audio chime or speech
     setSecurityAlert('SPOOF_REJECTED');
-    soundboxAudioEngine.unlockAudio();
-    soundboxAudioEngine.playRejectionAlertTone();
 
     reportSecurityAudit({
       eventType: 'PERMISSIONS_AUDIT',

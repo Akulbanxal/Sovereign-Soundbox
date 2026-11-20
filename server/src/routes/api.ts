@@ -73,6 +73,11 @@ const auditBodySchema = z.object({
   reason: z.string().min(1).max(500),
 });
 
+apiRouter.get('/security/audit', (_req: Request, res: Response) => {
+  const logs = dbQueries.getSecurityAuditLogs(50);
+  res.json({ logs });
+});
+
 apiRouter.post('/security/audit', (req: Request, res: Response) => {
   const parsed = auditBodySchema.safeParse(req.body);
   if (!parsed.success) {

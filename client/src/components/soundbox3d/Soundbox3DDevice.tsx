@@ -42,6 +42,17 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
         state: 'alert',
       };
     }
+    if (securityAlert === 'UNSETTLED_HOLD') {
+      return {
+        hex: 0xd97706,
+        css: '#D97706',
+        badgeBg: '#FEF3C7',
+        badgeText: '#B45309',
+        label: 'UNSETTLED HTLC',
+        subtext: 'AWAITING PREIMAGE · SILENT',
+        state: 'pending',
+      };
+    }
     if (status === 'PAID') {
       return {
         hex: 0x10b981,
@@ -75,12 +86,52 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
     };
   }, [status, securityAlert, t]);
 
+  // Keep a mutable ref of latest props so Three.js render loop & textures never use stale closures
+  const propsRef = useRef({
+    status,
+    securityAlert,
+    amountXof,
+    amountSats,
+    isMuted,
+    theme,
+    language,
+    t,
+  });
+
+  // Dedicated recoil shake trigger ref
+  const shakeTriggerRef = useRef<{ startTime: number; active: boolean }>({
+    startTime: 0,
+    active: false,
+  });
+
+  // Track previous security alert to trigger fresh shake on new alert
+  const prevSecurityAlertRef = useRef<SecurityAlert>(securityAlert);
+
   // Update canvas texture whenever props or language change
   useEffect(() => {
+    propsRef.current = {
+      status,
+      securityAlert,
+      amountXof,
+      amountSats,
+      isMuted,
+      theme,
+      language,
+      t,
+    };
+
+    if (securityAlert === 'SPOOF_REJECTED' || (securityAlert !== 'NONE' && prevSecurityAlertRef.current !== securityAlert)) {
+      shakeTriggerRef.current = {
+        startTime: performance.now(),
+        active: true,
+      };
+    }
+    prevSecurityAlertRef.current = securityAlert;
+
     if (updateScreenTextureRef.current) {
       updateScreenTextureRef.current();
     }
-  }, [theme, amountXof, amountSats, language, status, securityAlert]);
+  }, [theme, amountXof, amountSats, language, status, securityAlert, t]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -292,6 +343,15 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
       s2d.fillStyle = bgGrad;
       s2d.fillRect(0, 0, w, h);
 
+      const {
+        status: curStatus,
+        securityAlert: curAlert,
+        amountXof: curXof,
+        amountSats: curSats,
+        language: curLang,
+        t: curT,
+      } = propsRef.current;
+
       // Top Header Row: Brand & Language Pill
       s2d.fillStyle = '#C8963E';
       s2d.font = 'bold 15px "JetBrains Mono", monospace';
@@ -301,7 +361,7 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
       s2d.textAlign = 'right';
       s2d.fillStyle = '#C8963E';
       s2d.font = 'bold 13px "JetBrains Mono", monospace';
-      s2d.fillText(`[${language.toUpperCase()}] · NIP-47`, w - 24, 34);
+      s2d.fillText(`[${curLang.toUpperCase()}] · NIP-47`, w - 24, 34);
 
       // Dividing micro-line
       s2d.strokeStyle = 'rgba(200, 150, 62, 0.25)';
@@ -311,23 +371,24 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
       s2d.lineTo(w - 24, 46);
       s2d.stroke();
 
-      const isPaid = status === 'PAID';
-      const isAlert = securityAlert === 'SPOOF_REJECTED' || status === 'FAILED' || status === 'EXPIRED';
-      const isPending = status === 'PENDING' || status === 'UNPAID';
+      const isPaid = curStatus === 'PAID';
+      const isAlert = curAlert === 'SPOOF_REJECTED' || curStatus === 'FAILED' || curStatus === 'EXPIRED';
+      const isUnsettledHold = curAlert === 'UNSETTLED_HOLD';
+      const isPending = curStatus === 'PENDING' || curStatus === 'UNPAID';
 
-      if (isAlert && securityAlert === 'SPOOF_REJECTED') {
+      if (curAlert === 'SPOOF_REJECTED' || (isAlert && curAlert !== 'UNSETTLED_HOLD')) {
         // Red-Team Spoof Rejection OLED Display
         s2d.fillStyle = '#EF4444';
-        s2d.font = '800 36px "Plus Jakarta Sans", sans-serif';
+        s2d.font = '800 32px "Plus Jakarta Sans", sans-serif';
         s2d.textAlign = 'center';
-        s2d.fillText('⚠ SPOOF REJECTED', w / 2, 102);
+        s2d.fillText('⚠ SPOOF REJECTED', w / 2, 95);
 
-        s2d.fillStyle = '#F87171';
-        s2d.font = 'bold 16px "JetBrains Mono", monospace';
-        s2d.fillText(t('oled_rejected_no_proof'), w / 2, 138);
+        s2d.fillStyle = '#FF4D4D';
+        s2d.font = '800 28px "JetBrains Mono", monospace';
+        s2d.fillText('REJECTED: NO PROOF', w / 2, 138);
 
         s2d.fillStyle = '#DC2626';
-        const pillW = 440;
+        const pillW = 460;
         const pillH = 44;
         const pillX = (w - pillW) / 2;
         const pillY = 186;
@@ -336,21 +397,44 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
         s2d.fill();
 
         s2d.fillStyle = '#FFFFFF';
-        s2d.font = 'bold 16px "JetBrains Mono", monospace';
-        s2d.fillText('SILENT · ZERO NIP-47 PROOF', w / 2, pillY + 28);
+        s2d.font = 'bold 15px "JetBrains Mono", monospace';
+        s2d.fillText('SPEAKER SILENT · ZERO NIP-47 PROOF', w / 2, pillY + 28);
+      } else if (isUnsettledHold) {
+        // Red-Team Unsettled Hold Invoice Display
+        s2d.fillStyle = '#F59E0B';
+        s2d.font = '800 30px "Plus Jakarta Sans", sans-serif';
+        s2d.textAlign = 'center';
+        s2d.fillText('⏳ UNSETTLED HTLC', w / 2, 95);
+
+        s2d.fillStyle = '#FBBF24';
+        s2d.font = '800 24px "JetBrains Mono", monospace';
+        s2d.fillText('AWAITING PREIMAGE', w / 2, 138);
+
+        s2d.fillStyle = '#D97706';
+        const pillW = 460;
+        const pillH = 44;
+        const pillX = (w - pillW) / 2;
+        const pillY = 186;
+        s2d.beginPath();
+        s2d.roundRect(pillX, pillY, pillW, pillH, 12);
+        s2d.fill();
+
+        s2d.fillStyle = '#FFFFFF';
+        s2d.font = 'bold 15px "JetBrains Mono", monospace';
+        s2d.fillText('SPEAKER SILENT · UNCLAIMED IN CHANNEL', w / 2, pillY + 28);
       } else {
         // Normal / Pending / Paid Amount Display
         s2d.fillStyle = '#FAF7F2';
         s2d.font = '800 46px "Plus Jakarta Sans", sans-serif';
         s2d.textAlign = 'center';
-        const displayAmount = amountXof ? `${amountXof.toLocaleString('fr-SN')} CFA` : '0 CFA';
+        const displayAmount = curXof ? `${curXof.toLocaleString('fr-SN')} CFA` : '0 CFA';
         s2d.fillText(displayAmount, w / 2, 110);
 
         // Sub-amount satoshis + rate source
-        if (amountSats) {
+        if (curSats) {
           s2d.fillStyle = '#DFC07B';
           s2d.font = '600 17px "JetBrains Mono", monospace';
-          s2d.fillText(`≈ ${amountSats.toLocaleString()} SATS · SHA-256`, w / 2, 144);
+          s2d.fillText(`≈ ${curSats.toLocaleString()} SATS · SHA-256`, w / 2, 144);
         } else {
           s2d.fillStyle = '#A3ABA7';
           s2d.font = '14px "JetBrains Mono", monospace';
@@ -360,20 +444,20 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
         // Bottom Status Pill Badge
         let pillBg = '#0F3D2E';
         let pillText = '#C8963E';
-        let statusString = t('oled_ready_sale');
+        let statusString = curT('oled_ready_sale');
 
         if (isPaid) {
           pillBg = '#10B981';
           pillText = '#042F20';
-          statusString = `${t('soundbox_state_paid_label')} · SHA-256 ✓`;
+          statusString = `${curT('soundbox_state_paid_label')} · SHA-256 ✓`;
         } else if (isAlert) {
           pillBg = '#DC2626';
           pillText = '#FFFFFF';
-          statusString = t('soundbox_state_alert_label');
+          statusString = curT('soundbox_state_alert_label');
         } else if (isPending) {
           pillBg = '#D97706';
           pillText = '#FFFFFF';
-          statusString = t('oled_awaiting_payment');
+          statusString = curT('oled_awaiting_payment');
         }
 
         const pillW = 440;
@@ -397,8 +481,10 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
 
     updateScreenTextureRef.current = () => {
       drawOledScreen();
-      haloMat.color.setHex(theme.hex);
-      haloMat.emissive.setHex(theme.hex);
+      const currentTheme = propsRef.current.theme;
+      haloMat.color.setHex(currentTheme.hex);
+      haloMat.emissive.setHex(currentTheme.hex);
+      statusLight.color.setHex(currentTheme.hex);
     };
 
     drawOledScreen();
@@ -496,16 +582,28 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
       if (!isVisible) return; // Save 100% GPU when scrolled away
 
       const elapsed = clock.getElapsedTime();
+      const { status: curStatus, securityAlert: curAlert } = propsRef.current;
 
       // Smooth damping interpolation
       currentRotX += (targetRotX - currentRotX) * 0.08;
       currentRotY += (targetRotY - currentRotY) * 0.08;
 
-      // Recoil horizontal shake animation when alert triggered
+      // Violent recoil horizontal shake animation when alert triggered
       let shakeOffset = 0;
-      if (securityAlert === 'SPOOF_REJECTED' || status === 'FAILED') {
-        const shakeDecay = Math.max(0, 1 - (elapsed % 2.4) / 1.1);
-        shakeOffset = Math.sin(elapsed * 42) * 0.045 * shakeDecay;
+      let recoilTiltZ = 0;
+      if (shakeTriggerRef.current.active) {
+        const timeSinceShake = (performance.now() - shakeTriggerRef.current.startTime) / 1000;
+        if (timeSinceShake < 1.8) {
+          const shakeDecay = Math.max(0, 1.0 - timeSinceShake / 1.8);
+          // High-frequency violent horizontal shake
+          shakeOffset = Math.sin(timeSinceShake * 60) * 0.16 * shakeDecay;
+          recoilTiltZ = Math.sin(timeSinceShake * 45) * 0.08 * shakeDecay;
+        } else {
+          shakeTriggerRef.current.active = false;
+        }
+      } else if (curAlert === 'SPOOF_REJECTED' || curStatus === 'FAILED') {
+        // Continuous subtle warning jitter while alert persists
+        shakeOffset = Math.sin(elapsed * 25) * 0.015;
       }
       soundboxGroup.position.x = shakeOffset;
 
@@ -515,15 +613,28 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
 
       soundboxGroup.rotation.x = currentRotX + idleFloatX;
       soundboxGroup.rotation.y = currentRotY + idleFloatY;
+      soundboxGroup.rotation.z = recoilTiltZ;
 
-      // Dynamic LED status halo pulse
-      const pulseSpeed = status === 'PAID' ? 5.0 : status === 'PENDING' ? 3.5 : 1.5;
-      const pulse = 1.0 + Math.sin(elapsed * pulseSpeed) * (status === 'PENDING' ? 0.6 : 0.35);
-      haloMat.emissiveIntensity = pulse * 1.3;
-      statusLight.intensity = pulse * 1.4;
+      // Dynamic LED status halo pulse & Crimson Flash
+      if (curAlert === 'SPOOF_REJECTED') {
+        // Sharp, rapid crimson strobe flash
+        const flash = 1.0 + Math.abs(Math.sin(elapsed * 20)) * 1.8;
+        haloMat.emissiveIntensity = flash * 2.0;
+        statusLight.intensity = flash * 2.5;
+      } else if (curAlert === 'UNSETTLED_HOLD' || curStatus === 'PENDING') {
+        // Rhythmic amber scanning pulse
+        const amberPulse = 1.0 + Math.sin(elapsed * 3.5) * 0.6;
+        haloMat.emissiveIntensity = amberPulse * 1.3;
+        statusLight.intensity = amberPulse * 1.5;
+      } else {
+        const pulseSpeed = curStatus === 'PAID' ? 5.0 : 1.5;
+        const pulse = 1.0 + Math.sin(elapsed * pulseSpeed) * 0.35;
+        haloMat.emissiveIntensity = pulse * 1.3;
+        statusLight.intensity = pulse * 1.4;
+      }
 
       // Acoustic Wave Rings Animation (during PAID)
-      if (status === 'PAID') {
+      if (curStatus === 'PAID') {
         waveRings.forEach((ring, idx) => {
           const ringElapsed = (elapsed * 2.0 + idx * 0.45) % 1.6;
           const scale = 1.0 + ringElapsed * 0.45;
@@ -539,7 +650,7 @@ export const Soundbox3DDevice: React.FC<Soundbox3DDeviceProps> = ({
       }
 
       // Celebratory micro-particles during PAID
-      if (status === 'PAID') {
+      if (curStatus === 'PAID') {
         particleMat.opacity = Math.min(0.85, (Math.sin(elapsed * 2.5) + 1) * 0.45 + 0.1);
         const posArr = particleGeo.attributes.position.array as Float32Array;
         for (let i = 0; i < particleCount; i++) {
