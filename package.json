@@ -1,0 +1,32 @@
+{
+  "name": "sovereign-soundbox",
+  "version": "0.1.0",
+  "description": "Settlement-verified Bitcoin Lightning merchant POS for Senegal / WAEMU (XOF)",
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n \"server,client\" -c \"cyan,green\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm run dev --workspace=@sovereign-soundbox/client",
+    "dev:server": "npm run dev --workspace=@sovereign-soundbox/server",
+    "build": "npm run build --workspaces",
+    "start": "npm run start --workspace=@sovereign-soundbox/server",
+    "typecheck": "npm run typecheck --workspaces",
+    "validate:rates": "tsx scripts/validate-rates.ts",
+    "validate:nwc": "tsx scripts/validate-nwc.ts",
+    "validate:all": "npm run validate:rates && npm run validate:nwc",
+    "test": "tsx --test server/tests/*.test.ts"
+  },
+  "dependencies": {
+    "@getalby/sdk": "^9.0.0",
+    "dotenv": "^18.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

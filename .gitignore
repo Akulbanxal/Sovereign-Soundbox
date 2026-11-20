@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Secrets & Local Config (Never push NWC strings or private keys)
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Build Outputs
+dist/
+build/
+*.tsbuildinfo
+
+# SQLite Database Files & WAL Locks (Never push live or test database credentials)
+server/data/*.db*
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Logs & Temporary Files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# OS System Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

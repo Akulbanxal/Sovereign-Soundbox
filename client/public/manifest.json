@@ -1,0 +1,19 @@
+{
+  "name": "Sovereign Soundbox",
+  "short_name": "Soundbox",
+  "description": "Settlement-verified Bitcoin Lightning merchant POS for Senegal / WAEMU (XOF)",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#0F3D2E",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
