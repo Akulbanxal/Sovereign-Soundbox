@@ -9,6 +9,7 @@ import { AudioWaveformBar } from './components/pos/AudioWaveformBar';
 import { WalletConnectModal } from './components/settings/WalletConnectModal';
 import { RedTeamSandboxDrawer } from './components/demo/RedTeamSandboxDrawer';
 import { SecurityTrustModal } from './components/info/SecurityTrustModal';
+import { LandingPage } from './components/landing/LandingPage';
 import { Zap } from 'lucide-react';
 
 import {
@@ -92,6 +93,50 @@ const SAMPLE_DAKAR_TRANSACTIONS: InvoiceRecord[] = [
 
 export const App: React.FC = () => {
   const { language, t, formatCfa } = useTranslation();
+
+  // Navigation & View Routing State (Landing Page vs. POS Terminal)
+  const [currentView, setCurrentView] = useState<'landing' | 'pos'>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const savedInvoiceId =
+        sessionStorage.getItem('sovereign_soundbox_active_invoice_id') ||
+        sessionStorage.getItem('sovereign_active_invoice_id');
+      if (urlParams.get('view') === 'pos' || Boolean(savedInvoiceId)) {
+        return 'pos';
+      }
+    }
+    return 'landing';
+  });
+
+  const [isRedTeamOpen, setIsRedTeamOpen] = useState<boolean>(false);
+
+  const handleLaunchPos = useCallback(() => {
+    setCurrentView('pos');
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', 'pos');
+      window.history.pushState({}, '', url.toString());
+    } catch {}
+  }, []);
+
+  const handleLaunchRedTeam = useCallback(() => {
+    setCurrentView('pos');
+    setIsRedTeamOpen(true);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', 'pos');
+      window.history.pushState({}, '', url.toString());
+    } catch {}
+  }, []);
+
+  const handleBackToLanding = useCallback(() => {
+    setCurrentView('landing');
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('view');
+      window.history.pushState({}, '', url.toString());
+    } catch {}
+  }, []);
 
   // 1. Wallet & Audio State
   const [walletStatus, setWalletStatus] = useState<WalletConnectionStatus>('disconnected');
@@ -518,6 +563,15 @@ export const App: React.FC = () => {
 
   const activeDeviceStatus = activeInvoice ? activeInvoice.status : 'IDLE';
 
+  if (currentView === 'landing') {
+    return (
+      <LandingPage
+        onLaunchPos={handleLaunchPos}
+        onLaunchRedTeam={handleLaunchRedTeam}
+      />
+    );
+  }
+
   return (
     <AppShell
       walletStatus={walletStatus}
@@ -528,6 +582,7 @@ export const App: React.FC = () => {
       onToggleMute={handleToggleMute}
       onOpenSettings={() => setIsWalletModalOpen(true)}
       onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
+      onBackToLanding={handleBackToLanding}
       rateInfoText={`5 000 XOF ≈ ${Math.round((5000 / exchangeRate.xofPerBtc) * 100_000_000).toLocaleString()} sats`}
       rightPanelContent={
         <div className="flex flex-col gap-6">
@@ -563,6 +618,8 @@ export const App: React.FC = () => {
           onSimulateVerifiedSettlement={handleSimulateVerifiedSettlement}
           activeSecurityAlert={securityAlert}
           securityLogs={securityLogs}
+          isOpen={isRedTeamOpen}
+          onToggleOpen={() => setIsRedTeamOpen((prev) => !prev)}
         />
       }
     >

@@ -21,6 +21,9 @@ interface RedTeamSandboxDrawerProps {
   onSimulateVerifiedSettlement: () => void;
   activeSecurityAlert: SecurityAlert;
   securityLogs: SecurityEventLog[];
+  isOpen?: boolean;
+  onToggleOpen?: () => void;
+  defaultOpen?: boolean;
 }
 
 export const RedTeamSandboxDrawer: React.FC<RedTeamSandboxDrawerProps> = ({
@@ -31,9 +34,21 @@ export const RedTeamSandboxDrawer: React.FC<RedTeamSandboxDrawerProps> = ({
   onSimulateVerifiedSettlement,
   activeSecurityAlert,
   securityLogs,
+  isOpen: controlledIsOpen,
+  onToggleOpen,
+  defaultOpen = false,
 }) => {
   const { t, formatRelativeTime } = useTranslation();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [internalIsOpen, setInternalIsOpen] = useState<boolean>(defaultOpen);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+
+  const handleToggle = () => {
+    if (onToggleOpen) {
+      onToggleOpen();
+    } else {
+      setInternalIsOpen((prev) => !prev);
+    }
+  };
   const [lastExecutedAttack, setLastExecutedAttack] = useState<
     'fake_screenshot' | 'unsettled_hold' | 'duplicate_replay' | 'pay_block' | 'valid_settlement' | null
   >(null);
@@ -67,7 +82,7 @@ export const RedTeamSandboxDrawer: React.FC<RedTeamSandboxDrawerProps> = ({
     <div className="w-full bg-surface border-2 border-pending/40 rounded-3xl overflow-hidden shadow-flagship">
       {/* Banner / Toggle Header */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="w-full px-5 py-3.5 bg-pending/10 hover:bg-pending/15 border-b border-pending/20 flex items-center justify-between text-left transition-colors"
       >
         <div className="flex items-center gap-2.5">

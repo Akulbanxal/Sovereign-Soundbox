@@ -24,6 +24,7 @@ interface AppShellProps {
   onToggleMute: () => void;
   onOpenSettings: () => void;
   onOpenSecurityModal?: () => void;
+  onBackToLanding?: () => void;
   rateInfoText?: string;
 }
 
@@ -39,6 +40,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   onToggleMute,
   onOpenSettings,
   onOpenSecurityModal,
+  onBackToLanding,
   rateInfoText = '5,000 XOF ≈ 13,015 sats',
 }) => {
   const { t, language, setLanguage } = useTranslation();
@@ -93,6 +95,16 @@ export const AppShell: React.FC<AppShellProps> = ({
                 <span className="text-[11px] font-mono text-forest/75 font-medium">{t('nav_nip47_badge')}</span>
               </p>
             </div>
+
+            {onBackToLanding && (
+              <button
+                onClick={onBackToLanding}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-forest hover:bg-forest/10 border border-forest/20 transition-all shadow-2xs ml-1"
+                title={t('landing_nav_back_to_home')}
+              >
+                <span>{t('landing_nav_back_to_home')}</span>
+              </button>
+            )}
           </div>
 
           {/* Controls & Status Actions */}

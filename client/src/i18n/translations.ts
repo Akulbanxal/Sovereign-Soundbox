@@ -250,6 +250,51 @@ export interface TranslationDictionary {
   time_minutes_ago: string;
   time_hours_ago: string;
   time_days_ago: string;
+
+  // Landing Page
+  landing_nav_badge: string;
+  landing_nav_cta: string;
+  landing_nav_back_to_home: string;
+  landing_hero_badge: string;
+  landing_hero_headline: string;
+  landing_hero_subheadline: string;
+  landing_hero_cta_primary: string;
+  landing_hero_cta_secondary: string;
+  landing_hero_guarantee: string;
+  landing_preview_badge: string;
+  landing_preview_state_unpaid: string;
+  landing_preview_state_spoof: string;
+  landing_preview_state_paid: string;
+  landing_how_title: string;
+  landing_how_subtitle: string;
+  landing_step1_num: string;
+  landing_step1_title: string;
+  landing_step1_desc: string;
+  landing_step2_num: string;
+  landing_step2_title: string;
+  landing_step2_desc: string;
+  landing_step3_num: string;
+  landing_step3_title: string;
+  landing_step3_desc: string;
+  landing_why_title: string;
+  landing_why_subtitle: string;
+  landing_why_fraud_title: string;
+  landing_why_fraud_p1: string;
+  landing_why_fraud_p2: string;
+  landing_why_soundbox_title: string;
+  landing_why_soundbox_p1: string;
+  landing_why_soundbox_p2: string;
+  landing_guarantees_title: string;
+  landing_badge_receive_only: string;
+  landing_badge_receive_only_desc: string;
+  landing_badge_sha256: string;
+  landing_badge_sha256_desc: string;
+  landing_badge_zero_pii: string;
+  landing_badge_zero_pii_desc: string;
+  landing_badge_zero_rental: string;
+  landing_badge_zero_rental_desc: string;
+  landing_footer_cta_title: string;
+  landing_footer_cta_btn: string;
 }
 
 export const translations: Record<LanguageCode, TranslationDictionary> = {
@@ -501,6 +546,51 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     time_minutes_ago: 'Il y a {n} min',
     time_hours_ago: 'Il y a {n} h',
     time_days_ago: 'Il y a {n} j',
+
+    // Landing Page
+    landing_nav_badge: 'DAKAR · UEMOA LIGHTNING POS',
+    landing_nav_cta: 'Ouvrir le POS →',
+    landing_nav_back_to_home: '← Accueil',
+    landing_hero_badge: 'Dakar · UEMOA · Règlement Lightning NIP-47',
+    landing_hero_headline: 'Ne faites pas confiance à la capture d’écran. Faites confiance au règlement.',
+    landing_hero_subheadline: 'Transformez n’importe quel smartphone en soundbox marchande inviolable. Aucune location de matériel, preuve cryptographique NWC et confirmation vocale puissante en Français & Wolof.',
+    landing_hero_cta_primary: 'Ouvrir le Terminal POS',
+    landing_hero_cta_secondary: 'Tester la Sécurité (Red-Team)',
+    landing_hero_guarantee: '0 FCFA de matériel · Nœud Lightning souverain · Vérification mathématique',
+    landing_preview_badge: 'Jumeau Matériel 3D',
+    landing_preview_state_unpaid: 'En Attente',
+    landing_preview_state_spoof: 'Fraude Rejetée',
+    landing_preview_state_paid: 'Payé & Confirmé',
+    landing_how_title: 'Comment ça marche',
+    landing_how_subtitle: 'Trois étapes simples et instantanées pour sécuriser chaque vente au marché',
+    landing_step1_num: '01',
+    landing_step1_title: 'Saisir le montant en FCFA',
+    landing_step1_desc: 'Le commerçant tape le montant en XOF. Le terminal convertit instantanément en satoshis au cours du marché ouest-africain.',
+    landing_step2_num: '02',
+    landing_step2_title: 'Règlement NWC Direct',
+    landing_step2_desc: 'Le client scanne le QR code. Le terminal interroge directement votre nœud Lightning via NIP-47 sans intermédiaire.',
+    landing_step3_num: '03',
+    landing_step3_title: 'Annonce Vocale en Wolof & Français',
+    landing_step3_desc: 'Dès que la preuve SHA-256 (pré-image) est vérifiée, le haut-parleur annonce le montant à voix haute.',
+    landing_why_title: 'Pourquoi Sovereign Soundbox ?',
+    landing_why_subtitle: 'Conçu spécifiquement pour éradiquer les fraudes aux fausses captures d’écran au comptoir.',
+    landing_why_fraud_title: 'La Vulnérabilité des Terminaux Visuels',
+    landing_why_fraud_p1: 'Applications de trucage de reçus et fausses captures WhatsApp brandies par des clients malveillants.',
+    landing_why_fraud_p2: 'Paiements HTLC suspendus ou rejoués : le commerçant voit un faux écran vert, mais les fonds ne sont jamais réglés.',
+    landing_why_soundbox_title: 'La Règle d’Or Sovereign Soundbox',
+    landing_why_soundbox_p1: 'Zéro pré-image vérifiée = Silence absolu du haut-parleur. Impossible de tromper une équation mathématique.',
+    landing_why_soundbox_p2: 'Dans le vacarme du marché, le commerçant n’a pas besoin de regarder son écran : l’audio confirme le règlement exact.',
+    landing_guarantees_title: 'Garanties d’Architecture & Sécurité',
+    landing_badge_receive_only: 'NIP-47 Receive-Only',
+    landing_badge_receive_only_desc: 'Portée restreinte : make_invoice et lookup_invoice uniquement. La clé NWC ne peut en aucun cas dépenser vos fonds.',
+    landing_badge_sha256: 'Preuve Pré-image SHA-256',
+    landing_badge_sha256_desc: 'Chaque règlement est mathématiquement prouvé par la pré-image cryptographique du protocole Lightning.',
+    landing_badge_zero_pii: 'Zéro PII & Journal Local',
+    landing_badge_zero_pii_desc: 'Aucun numéro de téléphone, aucune donnée client collectée. Journal d’audit chiffré stocké en local sur SQLite.',
+    landing_badge_zero_rental: 'Zéro Location de Boîtier',
+    landing_badge_zero_rental_desc: 'Économisez les 15 000 FCFA/mois des terminaux bancaires : fonctionne sur n’importe quel navigateur smartphone.',
+    landing_footer_cta_title: 'Prêt à encaisser en toute souveraineté ?',
+    landing_footer_cta_btn: 'Lancer le Terminal Marchand →',
   },
 
   wo: {
@@ -751,6 +841,51 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     time_minutes_ago: 'ci {n} simili',
     time_hours_ago: 'ci {n} waxtu',
     time_days_ago: 'ci {n} fan',
+
+    // Landing Page
+    landing_nav_badge: 'NDAKAARU · UEMOA LIGHTNING POS',
+    landing_nav_cta: 'Ubbi POS bi →',
+    landing_nav_back_to_home: '← Dalal',
+    landing_hero_badge: 'Ndakaaru · UEMOA · Fay gu wóor NIP-47',
+    landing_hero_headline: 'Bul wóolu nataal bi. Wóolul fay gi wóor.',
+    landing_hero_subheadline: 'Defal sa telefon mu nekk kaa su koom-koom bu dëggu. Doolul luye jumtukaay, kaaraange NWC ak wax ci Wolof ak Farañse bu wóor.',
+    landing_hero_cta_primary: 'Ubbi Terminal POS bi',
+    landing_hero_cta_secondary: 'Seet Kaaraange gi (Red-Team)',
+    landing_hero_guarantee: '0 FCFA ab buîte · Sa kër Lightning dëggu · Xam-xamu saytu',
+    landing_preview_badge: 'Jumtukaay 3D ci wone',
+    landing_preview_state_unpaid: 'Xaar Fay gi',
+    landing_preview_state_spoof: 'Nax Rejeté na',
+    landing_preview_state_paid: 'Fay na & Wóor na',
+    landing_how_title: 'Nu muy doxee',
+    landing_how_subtitle: 'Ñatti jeego yu yomb ngir aar sa liggéey ci ja bi',
+    landing_step1_num: '01',
+    landing_step1_title: 'Duggal xaalis bi ci FCFA',
+    landing_step1_desc: 'Jaaykat bi dafay bind koppar bi ci XOF. Masin bi dafay wone satoshis yi léegi léegi.',
+    landing_step2_num: '02',
+    landing_step2_title: 'Fay gu jubal ci NWC',
+    landing_step2_desc: 'Kiliyaan bi dafay skaané QR bi. Masin bi dafay laaj sa nœud Lightning ci NIP-47 te amul benn yaxal.',
+    landing_step3_num: '03',
+    landing_step3_title: 'Wax ci Wolof ak Farañse',
+    landing_step3_desc: 'Suñu vérifié pré-image SHA-256 bi, masin bi dafay wax ci kaaw koppar bi duggu ci sa kër.',
+    landing_why_title: 'Lu tax Sovereign Soundbox ?',
+    landing_why_subtitle: 'Ñu def ko ngir faye nax ak nataali foto yu caxaan ci biir marse yi.',
+    landing_why_fraud_title: 'Jafe-jafey nataal rekk',
+    landing_why_fraud_p1: 'App yu defar nataali recibo yu fen ak foto WhatsApp yu jaaykat yi di naxee.',
+    landing_why_fraud_p2: 'Paiements yu teyoo ci yoon : jaaykat bi gis xob bu vert wante xaalis bi duggul mukk.',
+    landing_why_soundbox_title: 'Sartu Sovereign Soundbox',
+    landing_why_soundbox_p1: 'Amul pré-image bu wóor = Masin bi du wax dara te du riing. Mënuloo nax xam-xamu xisaab.',
+    landing_why_soundbox_p2: 'Ci coowu marse bi, soxlawul xool telefon : baat bi dafay wax koppar bu wóor.',
+    landing_guarantees_title: 'Kaaraange ak Wóor gu Dëggu',
+    landing_badge_receive_only: 'NIP-47 Jàng Rekk',
+    landing_badge_receive_only_desc: 'make_invoice ak lookup_invoice rekk. Kër gi mënul génne benn dërëm mukk.',
+    landing_badge_sha256: 'Firnde SHA-256 Pré-image',
+    landing_badge_sha256_desc: 'Benn bu nekk dafay am firnde xisaab bu Bitcoin Lightning di dëggal.',
+    landing_badge_zero_pii: 'Amul Tur wala Nimero',
+    landing_badge_zero_pii_desc: 'Dunu denc benn nimero telefon. Koom-koom bi ci SQLite bi rekk lay nekk.',
+    landing_badge_zero_rental: '0 FCFA Luye Boîte',
+    landing_badge_zero_rental_desc: 'Bàyyil 15 000 FCFA weer wu nekk : doxal ko ci sa telefon rekk ci internet.',
+    landing_footer_cta_title: 'Bëgg nga tambali jël say fay ci kaaraange ?',
+    landing_footer_cta_btn: 'Tàmbali Terminal bi →',
   },
 
   en: {
@@ -1001,6 +1136,51 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     time_minutes_ago: '{n}m ago',
     time_hours_ago: '{n}h ago',
     time_days_ago: '{n}d ago',
+
+    // Landing Page
+    landing_nav_badge: 'DAKAR · WAEMU LIGHTNING POS',
+    landing_nav_cta: 'Launch POS →',
+    landing_nav_back_to_home: '← Home',
+    landing_hero_badge: 'Dakar · WAEMU · NIP-47 Lightning Settlement',
+    landing_hero_headline: 'Don’t trust the screenshot. Trust the settlement.',
+    landing_hero_subheadline: 'Turn any smartphone into a tamper-proof merchant soundbox. Zero hardware rental fees, independent NWC settlement verification, and loud voice announcements in French & Wolof.',
+    landing_hero_cta_primary: 'Launch POS Terminal',
+    landing_hero_cta_secondary: 'Try Red-Team Security Demo',
+    landing_hero_guarantee: '0 FCFA hardware cost · Sovereign Lightning node · Mathematical verification',
+    landing_preview_badge: '3D Hardware Digital Twin',
+    landing_preview_state_unpaid: 'Awaiting Payment',
+    landing_preview_state_spoof: 'Fraud Rejected',
+    landing_preview_state_paid: 'Paid & Verified',
+    landing_how_title: 'How It Works',
+    landing_how_subtitle: 'Three effortless steps to secure every countertop sale in crowded markets',
+    landing_step1_num: '01',
+    landing_step1_title: 'Enter Amount in XOF',
+    landing_step1_desc: 'Merchant types the local FCFA price on the keypad. The terminal converts to satoshis using live West African market rates.',
+    landing_step2_num: '02',
+    landing_step2_title: 'Direct NWC Settlement',
+    landing_step2_desc: 'Customer scans the QR code. The terminal queries your Lightning node directly via NIP-47 with zero intermediaries.',
+    landing_step3_num: '03',
+    landing_step3_title: 'Voice Announcement in Wolof & French',
+    landing_step3_desc: 'The moment the SHA-256 preimage proof is cryptographically verified, the speaker announces the received amount out loud.',
+    landing_why_title: 'Why Sovereign Soundbox?',
+    landing_why_subtitle: 'Engineered specifically to eradicate fake screenshot fraud in African retail markets.',
+    landing_why_fraud_title: 'The Vulnerability of Visual Screens',
+    landing_why_fraud_p1: 'Fake receipt generator apps and Photoshopped WhatsApp screenshots flashed by deceitful shoppers.',
+    landing_why_fraud_p2: 'Held HTLC tricks & duplicate replays: the merchant glances at a green screen, but funds are never actually settled.',
+    landing_why_soundbox_title: 'The Sovereign Soundbox Rule',
+    landing_why_soundbox_p1: 'No cryptographic preimage proof = Absolute speaker silence. You cannot fake a SHA-256 hash.',
+    landing_why_soundbox_p2: 'Amid market clamor and rush hours, the merchant never has to glance at a screen: loud voice audio confirms genuine funds.',
+    landing_guarantees_title: 'Architecture & Security Guarantees',
+    landing_badge_receive_only: 'Receive-Only NIP-47 Scope',
+    landing_badge_receive_only_desc: 'Strictly limited to make_invoice and lookup_invoice. The connection key is cryptographically incapable of spending.',
+    landing_badge_sha256: 'SHA-256 Preimage Verification',
+    landing_badge_sha256_desc: 'Every settlement is validated against the cryptographic payment hash enforced by the Bitcoin Lightning protocol.',
+    landing_badge_zero_pii: 'Zero Customer PII',
+    landing_badge_zero_pii_desc: 'No phone numbers, names, or tracking. Local immutable SQLite audit trail stored entirely in your custody.',
+    landing_badge_zero_rental: 'Zero Hardware Rental Cost',
+    landing_badge_zero_rental_desc: 'Eliminates proprietary 15,000 FCFA/mo bank soundbox rentals: runs directly on any modern browser on any phone.',
+    landing_footer_cta_title: 'Ready to accept payments with sovereign confidence?',
+    landing_footer_cta_btn: 'Launch Merchant POS →',
   },
 };
 
